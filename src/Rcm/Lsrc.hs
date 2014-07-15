@@ -1,6 +1,6 @@
 {-# LANGUAGE MultiWayIf #-}
 
-module Rcm.Lsrc where
+-- module Rcm.Lsrc where
 
 import Control.Monad (forM_)
 import System.Environment (getArgs, getEnv)

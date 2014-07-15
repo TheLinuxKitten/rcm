@@ -1,4 +1,4 @@
-module Test.Main where
+-- module Test.Main where
 
 import Test.Hspec
 import Test.LsrcSpecs (lsrcSpecs)
