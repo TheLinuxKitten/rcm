@@ -14,16 +14,16 @@ rcrcSpecs = describe "Rcm.Private.Rcrc" $ do
   context "readRcrc" $ do
     it "produces the contents of the .rcrc" $
       let test = do
-          homedir <- mkdtemp "/tmp/rcm"
-          writeFile (joinPath [homedir, ".rcrc"]) sampleRcrc
-          readRcrc homedir in
+            homedir <- mkdtemp "/tmp/rcm"
+            writeFile (joinPath [homedir, ".rcrc"]) sampleRcrc
+            readRcrc homedir in
 
       test `shouldReturn` sampleRcrc
 
     it "produces the empty string if no .rcrc exists" $
       let test = do
-          homedir <- mkdtemp "/tmp/rcm"
-          readRcrc homedir in
+            homedir <- mkdtemp "/tmp/rcm"
+            readRcrc homedir in
 
       test `shouldReturn` ""
 
