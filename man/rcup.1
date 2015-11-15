@@ -9,10 +9,13 @@
 .Op Fl CfhiKkqVv
 .Op Fl B Ar hostname
 .Op Fl d Ar dir
+.Op Fl g
 .Op Fl I Ar excl_pat
 .Op Fl S Ar excl_pat
 .Op Fl s Ar excl_pat
 .Op Fl t Ar tag
+.Op Fl U Ar excl_pat
+.Op Fl u Ar excl_pat
 .Op Fl x Ar excl_pat
 .Op Ar files ...
 .Sh DESCRIPTION
@@ -42,6 +45,15 @@ This can be specified multiple times.
 if the rc file already exists in your home directory but does not match
 the file in your dotfiles directory, remove the rc file then create the
 symlink
+.It Fl g
+print to
+.Li stdout
+a standalone shell script that will run the
+.Nm
+command as specified.
+Nothing on your filesystem will be modified by
+.Nm
+when this flag is passed.
 .It Fl h
 show usage instructions.
 .It Fl I Ar EXCL_PAT
@@ -81,12 +93,34 @@ This option can be repeated.
 .It Fl t Ar TAG
 install dotfiles according to
 .Ar TAG
+.It Fl U Ar EXCL_PAT
+any rc file that matches
+.Ar EXCL_PAT
+is installed without a leading dot. This option can be repeated. See the
+documentation of the
+.Fl U
+option in
+.Xr lsrc 1
+for more information.
+.It Fl u Ar EXCL_PAT
+any rc file that matches
+.Ar EXCL_PAT
+is installed with a leading dot. This is the opposite of
+.Fl U .
+This option can be repeated. This is the default. See the documentation of the
+.Fl u
+option in
+.Xr lsrc 1
+for more information.
 .It Fl q
 decrease verbosity
 .It Fl V
 show the version number.
 .It Fl v
-increase verbosity. This can be repeated for extra verbosity.
+increase verbosity.
+This can be repeated for extra verbosity.
+Verbose messages are printed to
+.Li stderr .
 .It Fl x Ar EXCL_PAT
 do not install rc files that match
 .Ar EXCL_PAT .
@@ -122,8 +156,8 @@ Host-specific files go in a directory named for the host, prefixed with
 For example,
 .Pa .dotfiles/host-scarlett
 contains files specific to the computer with hostname
-.Pa scarlett
-, and these files will only be installed on the computer with hostname
+.Pa scarlett ,
+and these files will only be installed on the computer with hostname
 .Pa scarlett .
 .Pp
 Tagged files go in a directory named for the tag, prefixed with
@@ -215,4 +249,8 @@ User configuration file. Defaults to
 .Xr rcrc 5 ,
 .Xr rcm 7
 .Sh AUTHORS
-.An "Mike Burns" Aq mike@mike-burns.com
+.Nm
+is maintained by
+.An "Mike Burns" Aq Mt mburns@thoughtbot.com
+and
+.Lk http://thoughtbot.se thoughtbot

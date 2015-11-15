@@ -52,7 +52,7 @@ the directory only contains rc files; and these rc filenames do not
 begin with a period. See the caveats below if this is not you.
 .Bl -enum
 .It
-Dryrun with
+Dry run with
 .Xr lsrc 1 .
 Look for anything unexpected in here, such as
 .Pa ~/.install
@@ -68,17 +68,25 @@ This is likely to do nothing, since your dotfiles already exist.
 .Pp
 .Dl rcup -v
 .It
-When necessary, add new rc files with
+When necessary, add new rc files to the dotfiles directory with
 .Xr mkrc 1 .
 .Pp
 .Dl mkrc ~/.tigrc
+.Pp
+In the other direction, you can use
+.Xr rcup 1
+to create the symlinks from
+.Pa ~/.dotfiles
+to your home directory.
+.Pp
+.Dl rcup tigrc
 .El
 .Ss COMMON PROBLEM: EXISTING INSTALL SCRIPTS
 Many existing dotfile directories have scripts named
 .Pa install
 or
 .Pa Makefile
-in the directory directory. This will cause a
+in the directory. This will cause a
 .Pa ~/.install
 or
 .Pa ~/.Makefile
@@ -114,6 +122,22 @@ in
 .Xr rcrc 5 .
 .Pp
 .Dl rcup -d configs -v
+.
+.Ss COMMON PROBLEM: CONFIGURATION FILES/DIRECTORIES WITHOUT DOTS
+By default, the rcm suite will prefix every file and directory it manages
+with a dot. If that is not desired, for example in the case of
+.Pa ~/bin
+or
+.Pa ~/texmf ,
+you can add that file or directory to
+.Ev UNDOTTED
+in
+.Xr rcrc 5
+or use the
+.Fl U
+option. For example:
+.Pp
+.Dl mkrc -U bin
 .
 .Sh QUICK START FOR EMPTY DOTFILES DIRECTORIES
 This section is for those who do not have an existing dotfiles
@@ -152,7 +176,7 @@ while your other contributor has a
 This situation can be handled with tags.
 .Bl -enum
 .It
-A tag is a directory under the dotfiles directory the starts with the
+A tag is a directory under the dotfiles directory that starts with the
 letters
 .Li tag- .
 We can handle the competing shell example by
@@ -224,6 +248,33 @@ flag.
 OS X users should see the
 .Sx BUGS
 section for more details.
+.
+.Sh STANDALONE INSTALLATION SCRIPT
+.
+The
+.Xr rcup 1
+tool can be used to generate a portable shell script.
+Instead of running a command such as
+.Xr ln 1
+or
+.Xr rm 1 ,
+it will print the command to
+.Li stdout .
+This is controlled with the
+.Fl g
+flag.
+Note that this will generate a script to create an exact replica of the
+synchronization, including tags, host-specific files, and dotfiles directories.
+.Pp
+.Dl env RCRC=/dev/null rcup -B 0 -g > install.sh
+.Pp
+Using the above command, you can now run
+.Li install.sh
+to install (or re-install) your rc files.
+The
+.Li install.sh
+script can be stored in your dotfiles directory, copied between computers, and
+so on.
 .
 .Sh RATIONALE
 The rcm suite was built as an abstraction over the shell, Ruby, Python,

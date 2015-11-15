@@ -4,8 +4,9 @@ Contributing
 Overview
 --------
 
+- Make your changes.
 - Update `NEWS.md.in`.
-- Update `.mailmap`.
+- Update `.mailmap` if necessary.
 - Write a test covering your feature or fix.
 - Ensure existing and new tests are passing.
 - Submit a pull request on GitHub.
@@ -22,23 +23,42 @@ We use your name and email address as produced by `git-shortlog(1)`. You
 can change how this is formatted by modifying `.mailmap`. More details
 on that file can be found in the git [Documentation/mailmap.txt][mailmap].
 
-Our test suite is new, and therefore it is not yet mandatory to include 
-tests with pull requests. However, you must ensure that the existing 
-test suite passes with any changes you make. Also, any attempts to add 
-or extend tests will increase the chances of your pull request being 
-merged.
+It is mandatory to include tests with pull requests. You must ensure that the
+existing test suite passes with any changes you make. Also, any attempts to add
+or extend tests will increase the chances of your pull request being merged.
 
 Submit a pull request using GitHub. If there is a relevant bug, mention
-it in the commit message (`Fixes #42.`).
+it in the commit message (`Fixes #42.`). We love pull requests from everyone.
+By participating in this project, you agree to abide by the thoughtbot
+[code of conduct].
 
-[mailmap]: https://github.com/git/git/blob/6a907786af835ac15962be53f1492f2
+[mailmap]: https://github.com/git/git/blob/master/Documentation/mailmap.txt
+[code of conduct]: https://thoughtbot.com/open-source-code-of-conduct
 
-Testing
+Setup
 -----
 
-The test suite uses [cram][]. It is an integration suite, meaning the 
-programs are exercised from the outside and assertions are made only on 
+1. Fork the repo.
+2. Install dependencies
+
+  - Cram is used for tests: `pip install cram`
+  - The mustache gem for building the HTML pages: `gem install mustache`
+
+3. Prepare the build system: `./autogen.sh`. (This depends on GNU
+   autoconf and GNU automake.)
+4. Configure the package: `./configure`.
+5. Make sure the tests pass: `make check`.
+6. Start hacking
+
+Testing
+-------
+
+The test suite uses [cram][]. It is an integration suite, meaning the
+programs are exercised from the outside and assertions are made only on
 their output or effects.
+
+The test suite requires Perl with the `Cwd` module. It expects to find Perl as
+`perl` in `$PATH`.
 
 All tests can be run like so:
 
@@ -46,7 +66,7 @@ All tests can be run like so:
 
 Individual tests can be run like so:
 
-    $ env TESTS=lsrc-dotfiles-dirs.t make -e check
+    $ env TESTS=test/lsrc-dotfiles-dirs.t make -e check
 
 If you intend to write a new test:
 

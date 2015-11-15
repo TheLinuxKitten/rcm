@@ -9,6 +9,14 @@ export RCM_LIB="$TESTDIR/../share"
 
 mkdir .dotfiles
 
+hostname() {
+  if [ -n "$HOSTNAME" ]; then
+    echo "$HOSTNAME"
+  else
+    command hostname | sed -e 's/\..*//'
+  fi
+}
+
 assert() {
   local msg="$1"; shift
 
@@ -25,9 +33,15 @@ refute() {
   return 0
 }
 
+resolved_path() {
+  local original_path="$1"
+  perl -e \
+    "use Cwd realpath; print realpath(\"$original_path\") . \"\\n\";" 
+}
+
 assert_linked() {
   local from="$1" to="$2"
-  local resolved="$(readlink -f "$from")"
+  local resolved="$(resolved_path "$from")"
 
   assert "$from should be a symlink" -h "$from"
   assert "$from should resolve to $to, resolved to $resolved" "$resolved" = "$to"

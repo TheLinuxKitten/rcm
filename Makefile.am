@@ -1,120 +1,47 @@
 AUTOMAKE_OPTIONS = foreign
-SUBDIRS = man share bin test
 EXTRA_DIST = LICENSE README.md NEWS.md
 
-.PHONY: release \
-	release_build release_push release_clean \
-	release_build_tarball release_build_homebrew release_build_arch \
-	release_push_tarball release_push_homebrew release_push_arch \
-	release_clean_tarball release_clean_homebrew release_clean_arch \
-	release_build_deb release_push_deb release_clean_deb release_build_tag \
-	release_push_tag release_clean_tag release_build_man_html \
-	release_push_man_html release_clean_man_html
+dist_bin_SCRIPTS = bin/lsrc bin/mkrc bin/rcup bin/rcdn
 
-ORIGIN_URL=$(shell git config --get remote.origin.url)
-CURRENT_BRANCH=$(shell git rev-parse --abbrev-ref HEAD)
+# When changing this you must also change maint/release.in .
+dist_man_MANS = man/lsrc.1 man/mkrc.1 man/rcdn.1 man/rcup.1 man/rcrc.5 man/rcm.7
 
-edit_package = sed \
-	-e 's|@PACKAGE[@]|$(PACKAGE)|g' \
-	-e 's|@PACKAGE_VERSION[@]|$(PACKAGE_VERSION)|g' \
-	-e 's|@DIST_ARCHIVES[@]|$(DIST_ARCHIVES)|g' \
-	-e 's|@DIST_SHA[@]|$(DIST_SHA)|g'
+dist_pkgdata_DATA = share/rcm.sh
 
-release: release_build release_push release_clean
+TESTS = \
+	test/lsrc-dotfiles-dirs.t \
+	test/lsrc-excludes.t \
+	test/lsrc-hostname.t \
+	test/lsrc-sigils.t \
+	test/lsrc.t \
+	test/lsrc-symlink-dirs.t \
+	test/lsrc-tags.t \
+	test/lsrc-usage.t \
+	test/lsrc-undotted.t \
+	test/lsrc-host-tags-default.t \
+	test/mkrc-alternate-dotfiles-dir.t \
+	test/mkrc-copy-file.t \
+	test/mkrc-host-file.t \
+	test/mkrc-hostname.t \
+	test/mkrc-simple-output.t \
+	test/mkrc-symlink-dirs.t \
+	test/mkrc-tagged-file.t \
+	test/mkrc-usage.t \
+	test/mkrc-undotted.t \
+	test/rcrc-custom.t \
+	test/rcrc-hostname.t \
+	test/rcrc.t \
+	test/rcup-link-files.t \
+	test/rcup-hostname.t \
+	test/rcup-standalone.t \
+	test/rcup-symlink-dirs.t \
+	test/rcup-usage.t \
+	test/rcdn-hooks.t \
+	test/rcdn-hooks-run-in-situ.t \
+	test/rcup-hooks.t \
+	test/rcup-hooks-run-in-situ.t
 
-release_build: release_build_tarball release_build_homebrew release_build_arch \
-	release_build_deb release_build_tag release_build_man_html
+dist_check_SCRIPTS = $(TESTS)
+dist_check_DATA = test/helper.sh
 
-release_push: release_push_tarball release_push_homebrew release_push_arch \
-	release_push_deb release_push_tag release_push_man_html
-
-release_clean: release_clean_tarball release_clean_homebrew release_clean_arch \
-	release_clean_deb release_clean_tag release_clean_man_html
-
-###### Tarball
-release_build_tarball: Makefile distcheck
-	([ -d gh-pages ] || git clone --branch gh-pages . gh-pages) && \
-		([ -d gh-pages/dist ] || mkdir gh-pages/dist) && \
-		cp $(DIST_ARCHIVES) gh-pages/dist && \
-		cd gh-pages &&\
-			git add dist/$(DIST_ARCHIVES) &&\
-			git commit -m "Release version $(PACKAGE_VERSION) tarball"
-
-release_push_tarball:
-	cd gh-pages &&\
-		git push
-
-release_clean_tarball:
-	rm -rf gh-pages
-	rm -rf $(DIST_ARCHIVES)
-
-###### Homebrew
-release_build_homebrew: DIST_SHA
-	([ -d homebrew-formulae ] || git clone git@github.com:thoughtbot/homebrew-formulae.git homebrew-formulae) && \
-		$(edit_package) homebrew/$(PACKAGE).rb.in > homebrew-formulae/Formula/$(PACKAGE).rb && \
-		cd homebrew-formulae &&\
-		git commit -am "$(PACKAGE): Release version $(PACKAGE_VERSION)"
-
-release_push_homebrew:
-	cd homebrew-formulae &&\
-		git push
-
-release_clean_homebrew:
-	rm -rf homebrew-formulae
-	rm -rf $(DIST_ARCHIVES)
-
-###### Arch
-release_build_arch: DIST_SHA
-	([ -d gh-pages ] || git clone --branch gh-pages . gh-pages) && \
-		([ -d gh-pages/arch ] || mkdir gh-pages/arch) && \
-		$(edit_package) arch/PKGBUILD.in > gh-pages/arch/PKGBUILD &&\
-		cd gh-pages &&\
-			git add arch/PKGBUILD &&\
-			git commit -m "Release version $(PACKAGE_VERSION) Arch package"
-
-release_push_arch:
-	cd gh-pages &&\
-		git push
-
-release_clean_arch:
-	rm -rf gh-pages
-	rm -rf $(DIST_ARCHIVES)
-
-###### Deb
-release_build_deb: NEWS.md DIST_SHA distcheck
-	([ -d deb-build ] || mkdir -p deb-build) && \
-		cp $(DIST_ARCHIVES) deb-build/$(PACKAGE)_$(PACKAGE_VERSION).orig.tar.gz && \
-		tar -C deb-build -xf deb-build/$(PACKAGE)_$(PACKAGE_VERSION).orig.tar.gz && \
-		cp -R debian deb-build/$(PACKAGE)-$(PACKAGE_VERSION) && \
-		cd deb-build/$(PACKAGE)-$(PACKAGE_VERSION) && \
-		dch -d "New upstream release" && dch -r "" && \
-		cp debian/changelog $(abs_srcdir)/debian/changelog && \
-		debuild -us -uc && \
-		cd $(abs_srcdir) && \
-		([ -d gh-pages ] || git clone --branch gh-pages $(ORIGIN_URL) gh-pages) && \
-		([ -d gh-pages/debs ] || mkdir gh-pages/debs) && \
-		cp deb-build/$(PACKAGE)_$(PACKAGE_VERSION)*.deb gh-pages/debs && \
-		cd gh-pages && \
-		git add debs/$(PACKAGE)_$(PACKAGE_VERSION)*deb && \
-		git commit -m "Release version $(PACKAGE_VERSION) for Debian" -- debs/$(PACKAGE)_$(PACKAGE_VERSION)*deb
-
-release_push_deb:
-	cd gh-pages && \
-		git push
-
-release_clean_deb:
-	rm -rf gh-pages
-	rm -rf deb-build
-	rm -rf $(DIST_ARCHIVES)
-
-###### Tag
-release_build_tag:
-	git tag -s v$(PACKAGE_VERSION) -m "Release $(PACKAGE_VERSION)"
-
-release_push_tag:
-	git push origin --tags
-
-release_clean_tag:
-
-DIST_SHA: Makefile distcheck
-	$(eval DIST_SHA := $(shell shasum $(srcdir)/$(DIST_ARCHIVES) | cut -d' ' -f1))
+LOG_COMPILER = cram

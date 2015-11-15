@@ -40,7 +40,8 @@ test-driver
 *.t.err
 *.t.trs
 *.t.log
-test/test-suite.log
+test-suite.log
 
 # Other generated files
 man/rcm.7
+maint/release

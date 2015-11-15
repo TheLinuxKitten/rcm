@@ -16,37 +16,52 @@ Installation
 
 Arch Linux:
 
-  https://aur.archlinux.org/packages/rcm-git/
+  https://aur.archlinux.org/packages/rcm/
 
-Debian-based (including Ubuntu):
+Debian-based:
 
-    wget https://thoughtbot.github.io/rcm/debs/rcm_1.2.3-1_all.deb
-    sudo dpkg -i rcm_1.2.3-1_all.deb
+    wget https://thoughtbot.github.io/rcm/debs/rcm_1.3.0-1_all.deb
+    sha=$(sha256sum rcm_1.3.0-1_all.deb | cut -f1 -d' ')
+    [ "$sha" = "2e95bbc23da4a0b995ec4757e0920197f4c92357214a65fedaf24274cda6806d" ] && \
+    sudo dpkg -i rcm_1.3.0-1_all.deb
+
+OpenBSD (-current):
+
+    sudo pkg_add rcm
+
+Fedora 21/22/23:
+
+    sudo dnf copr enable seeitcoming/rcm
+    sudo dnf install rcm
 
 openSUSE/RHEL/CentOS: [instructions](http://software.opensuse.org/download.html?project=utilities&package=rcm)
-
-Gentoo-based (including Funtoo):
-
-    sudo emerge layman
-    sudo layman -f --overlays https://github.com/bronislav/overlays/raw/master/layman.xml --add bronislav
-    sudo emerge rcm
 
 OS X:
 
     brew tap thoughtbot/formulae
     brew install rcm
 
+Ubuntu:
+
+    sudo add-apt-repository ppa:martin-frost/thoughtbot-rcm
+    sudo apt-get update
+    sudo apt-get install rcm
+
 Elsewhere:
 
 This uses the standard GNU autotools, so it's the normal dance:
 
-    wget https://thoughtbot.github.io/rcm/dist/rcm-1.2.3.tar.gz && \
-    tar -xvf rcm-1.2.3.tar.gz && \
-    cd rcm-1.2.3 && \
+    curl -LO https://thoughtbot.github.io/rcm/dist/rcm-1.3.0.tar.gz && \
+
+    sha=$(sha256 rcm-1.3.0.tar.gz | cut -f1 -d' ') && \
+    [ "$sha" = "502fd44e567ed0cfd00fb89ccc257dac8d6eb5d003f121299b5294c01665973f" ] && \
+
+    tar -xvf rcm-1.3.0.tar.gz && \
+    cd rcm-1.3.0 && \
 
     ./configure && \
     make && \
-    make install
+    sudo make install
 
 For more, see `INSTALL`.
 
@@ -79,4 +94,18 @@ License
 -------
 
 Copyright 2013 Mike Burns. BSD license.
-Copyright 2014 thoughtbot. BSD license.
+Copyright 2014-2015 thoughtbot. BSD license.
+
+## About thoughtbot
+
+![thoughtbot](https://thoughtbot.com/logo.png)
+
+RCM is maintained and funded by thoughtbot, inc.
+The names and logos for thoughtbot are trademarks of thoughtbot, inc.
+
+We adore open source software.
+See [our other projects][community].
+We are [available for hire][hire].
+
+[community]: https://thoughtbot.com/community?utm_source=github
+[hire]: https://thoughtbot.com/hire-us?utm_source=github
