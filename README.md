@@ -20,26 +20,47 @@ Arch Linux:
 
 Debian-based:
 
-    wget https://thoughtbot.github.io/rcm/debs/rcm_1.3.0-1_all.deb
-    sha=$(sha256sum rcm_1.3.0-1_all.deb | cut -f1 -d' ')
-    [ "$sha" = "2e95bbc23da4a0b995ec4757e0920197f4c92357214a65fedaf24274cda6806d" ] && \
-    sudo dpkg -i rcm_1.3.0-1_all.deb
+    wget -qO - https://apt.thoughtbot.com/thoughtbot.gpg.key | sudo apt-key add -
+    echo "deb http://apt.thoughtbot.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/thoughtbot.list
+    sudo apt-get update
+    sudo apt-get install rcm
+
+Korora:
+
+  64-bit Korora 23:
+
+    sudo dnf copr enable seeitcoming/rcm fedora-23-x86_64
+    sudo dnf install rcm
+
+  Korora is similar to Fedora but with [an additional version and architecture
+  specification][copr-fedora-korora]. Replace `fedora-23-x86_64` as
+  appropriate.
+
+  [copr-fedora-korora]: https://kororaproject.org/about/news/when-adding-a-copr-repo-to-korora-fails
 
 OpenBSD (-current):
 
-    sudo pkg_add rcm
+    doas pkg_add rcm
 
-Fedora 21/22/23:
+Fedora 22, 23, 24, 25:
 
     sudo dnf copr enable seeitcoming/rcm
     sudo dnf install rcm
 
+FreeBSD:
+
+    sudo pkg install rcm
+
 openSUSE/RHEL/CentOS: [instructions](http://software.opensuse.org/download.html?project=utilities&package=rcm)
 
-OS X:
+macOS with Homebrew:
 
     brew tap thoughtbot/formulae
     brew install rcm
+
+macOS with MacPorts:
+
+    port install rcm
 
 Ubuntu:
 
@@ -47,17 +68,21 @@ Ubuntu:
     sudo apt-get update
     sudo apt-get install rcm
 
+Gentoo:
+
+    emerge app-admin/rcm
+
 Elsewhere:
 
 This uses the standard GNU autotools, so it's the normal dance:
 
-    curl -LO https://thoughtbot.github.io/rcm/dist/rcm-1.3.0.tar.gz && \
+    curl -LO https://thoughtbot.github.io/rcm/dist/rcm-1.3.1.tar.gz && \
 
-    sha=$(sha256 rcm-1.3.0.tar.gz | cut -f1 -d' ') && \
-    [ "$sha" = "502fd44e567ed0cfd00fb89ccc257dac8d6eb5d003f121299b5294c01665973f" ] && \
+    sha=$(sha256 rcm-1.3.1.tar.gz | cut -f1 -d' ') && \
+    [ "$sha" = "9c8f92dba63ab9cb8a6b3d0ccf7ed8edf3f0fb388b044584d74778145fae7f8f" ] && \
 
-    tar -xvf rcm-1.3.0.tar.gz && \
-    cd rcm-1.3.0 && \
+    tar -xvf rcm-1.3.1.tar.gz && \
+    cd rcm-1.3.1 && \
 
     ./configure && \
     make && \
@@ -98,7 +123,7 @@ Copyright 2014-2015 thoughtbot. BSD license.
 
 ## About thoughtbot
 
-![thoughtbot](https://thoughtbot.com/logo.png)
+![thoughtbot](http://presskit.thoughtbot.com/images/thoughtbot-logo-for-readmes.svg)
 
 RCM is maintained and funded by thoughtbot, inc.
 The names and logos for thoughtbot are trademarks of thoughtbot, inc.

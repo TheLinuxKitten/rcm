@@ -34,7 +34,7 @@ print_generated_preface() {
 #
 #    sh install.sh
 #
-# Environment variables: VERBOSE, CP, LN, MKDIR, RM, DIRNAME, XARGS.
+# Environment variables: VERBOSE, CP, LN, MKDIR, RM, DIRNAME.
 #
 #    env VERBOSE=1 sh install.sh
 #
@@ -52,7 +52,6 @@ print_generated_preface() {
 : \${MKDIR:=/bin/mkdir}
 : \${RM:=/bin/rm}
 : \${DIRNAME:=/usr/bin/dirname}
-: \${XARGS:=/usr/bin/xargs}
 verbose() {
   if [ "\$VERBOSE" -gt 0 ]; then
     echo "\$@"
@@ -73,7 +72,7 @@ handle_file_cp() {
     esac
   fi
   verbose "'\$1' -> '\$2'"
-  \$DIRNAME "\$2" | \$XARGS \$MKDIR -p
+  \$MKDIR -p "\$(\$DIRNAME "\$2")"
   \$CP -R "\$1" "\$2"
 }
 handle_file_ln() {
@@ -91,7 +90,7 @@ handle_file_ln() {
     esac
   fi
   verbose "'\$1' -> '\$2'"
-  \$DIRNAME "\$2" | \$XARGS \$MKDIR -p
+  \$MKDIR -p "\$(\$DIRNAME "\$2")"
   \$LN -sf "\$1" "\$2"
 }
 PREFACE
@@ -130,12 +129,24 @@ is_identical() {
   diff -c "$1" "$2" > /dev/null 2>&1
 }
 
+is_linked() {
+  local src="$1"
+  local dest="$2"
+
+  if [ -h "$dest" ]; then
+    local link_dest=$(readlink $dest)
+    [ "$link_dest" = "$src" ]
+  else
+    return 1
+  fi  
+}
+
 handle_dir() {
   local dest="$1"
 
-  $DEBUG "handle_dir $1"
+  $DEBUG "handle_dir $dest"
 
-  dirname "$dest" | xargs $MKDIR -p
+  $MKDIR -p "$(dirname "$dest")"
 }
 
 handle_file() {
@@ -148,7 +159,12 @@ handle_file() {
 
   if [ "$generate" -ne 1 -a -e "$dest" ]; then
     if is_identical "$src" "$dest"; then
-      $VERBOSE "identical $dest"
+      if [ "x$sigil" != "xX" ] && ! is_linked "$src" "$dest"; then
+        $VERBOSE "replacing identical but unlinked $dest"
+        replace_file "$src" "$dest" "$sigil"
+      else
+        $VERBOSE "identical $dest"
+      fi
     elif [ $REPLACE_ALL -eq 1 ]; then
       replace_file "$src" "$dest" "$sigil"
     else
@@ -191,7 +207,7 @@ handle_command_line() {
   local never_symlink_dirs=
   local hostname=
   local generate=0
-  local args=$*
+  local args="$*"
   local undotted=
   local never_undotted=
   REPLACE_ALL=0
@@ -243,7 +259,10 @@ handle_command_line() {
   tags="${arg_tags:-$TAGS}"
   DOTFILES_DIRS="${dotfiles_dirs:-$DOTFILES_DIRS}"
   RUN_HOOKS=$run_hooks
-  files="$@"
+  files=
+  for file; do
+    files="$files $(encode "$file")"
+  done
 
   for tag in $tags; do
     LS_ARGS="$LS_ARGS -t $tag"

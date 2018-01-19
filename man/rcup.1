@@ -183,6 +183,15 @@ and
 These files must be executable. They are run every time
 .Nm
 is run, and therefore must be idempotent.
+.Pp
+Hooks will be executed one at a time, sorted alphabetically. For instance,
+.Pa hooks/pre-up/animals
+will run before
+.Pa hooks/pre-up/aquariums ,
+and
+.Pa hooks/pre-up/4-eyes
+will run before
+.Pa hooks/post-up/2-u-nothing-compares .
 .Sh ALGORITHM
 It is instructive to understand the process
 .Nm rcup
@@ -211,14 +220,14 @@ directory to be created, then
 is symlinked within.
 .
 .It
-Steps (1) and (2) are applied to host-specific files. These are files
+Steps (2) and (3) are applied to host-specific files. These are files
 under a directory named
 .Sm off
 .Pa host- Va $HOSTNAME .
 .Sm on
 .
 .It
-Steps (1) and (2) are applied to tag-specific files. These are files
+Steps (2) and (3) are applied to tag-specific files. These are files
 under directories named
 .Sm off
 .Pa tag- Va $TAG_NAME ,

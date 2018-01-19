@@ -15,6 +15,7 @@ TESTS = \
 	test/lsrc-sigils.t \
 	test/lsrc.t \
 	test/lsrc-symlink-dirs.t \
+	test/lsrc-spaces.t \
 	test/lsrc-tags.t \
 	test/lsrc-usage.t \
 	test/lsrc-undotted.t \
@@ -24,22 +25,28 @@ TESTS = \
 	test/mkrc-host-file.t \
 	test/mkrc-hostname.t \
 	test/mkrc-simple-output.t \
+	test/mkrc-spaces.t \
 	test/mkrc-symlink-dirs.t \
 	test/mkrc-tagged-file.t \
 	test/mkrc-usage.t \
 	test/mkrc-undotted.t \
 	test/rcrc-custom.t \
+	test/rcrc-tilde.t \
 	test/rcrc-hostname.t \
 	test/rcrc.t \
 	test/rcup-link-files.t \
 	test/rcup-hostname.t \
 	test/rcup-standalone.t \
 	test/rcup-symlink-dirs.t \
+	test/rcup-symlink-existing.t \
 	test/rcup-usage.t \
 	test/rcdn-hooks.t \
 	test/rcdn-hooks-run-in-situ.t \
+	test/rcdn-hooks-run-in-order.t \
 	test/rcup-hooks.t \
-	test/rcup-hooks-run-in-situ.t
+	test/rcup-hooks-run-in-situ.t \
+	test/rcup-hooks-run-in-order.t \
+	test/rcup-spaces.t
 
 dist_check_SCRIPTS = $(TESTS)
 dist_check_DATA = test/helper.sh
